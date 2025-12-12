@@ -187,24 +187,12 @@ async def handle_audio(message: Message):
         used_model = None
         errors_log = []
 
-        # 5. КАСКАДНЫЙ ПЕРЕБОР МОДЕЛЕЙ
+        # КАСКАДНЫЙ ПЕРЕБОР
         for model_name in MODEL_CASCADE:
+            time.sleep(2) # <--- ВАЖНО: Пауза 2 секунды, чтобы Google не банил за частоту
             try:
                 await status_msg.edit_text(f"🎧 Слушаю моделью: <b>{model_name}</b>...", parse_mode="HTML")
-                model = genai.GenerativeModel(model_name)
-                
-                # Генерация ответа
-                response = model.generate_content([SYSTEM_PROMPT, uploaded_file])
-                
-                if response.text:
-                    final_text = response.text
-                    used_model = model_name
-                    break # Успех! Выходим из цикла
-            except Exception as e:
-                print(f"Сбой модели {model_name}: {e}")
-                errors_log.append(f"{model_name}: error")
-                continue # Пробуем следующую
-
+                # ... (дальше код как был)
         # 6. Обработка результата
         if final_text:
             # Сохраняем в файл
@@ -251,4 +239,5 @@ if __name__ == "__main__":
     keep_alive()
     # Запускаем основного бота
     asyncio.run(main())
+
 
